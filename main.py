@@ -32,6 +32,9 @@ def extract_the_first_10000_data():
     print('First 10000 data have been extracted and saved to the new articles_data.json file.')
 
 
+extract_the_first_10000_data()
+
+
 # Create index
 def create_index(index_name, mappings):
     response = requests.request(method='PUT',
