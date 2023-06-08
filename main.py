@@ -51,6 +51,7 @@ def index_docs(document_dicts, index_url):
 
 # Pre-process method
 def process(line):
+    # cleaned_line = re.sub("\\\\u[\\d\\w]{4}|\\\\\\w|(\\\\)(?=\\\\/)", '', line)
     cleaned_line = re.sub("\\\\u[\\d\\w]{4}|\\\\\\w", '', line)
     cleaned_line = re.sub("\\s+", ' ', cleaned_line)
 
@@ -86,10 +87,109 @@ def index_articles(num_docs):
     index_docs(cleaned_data, articles_processed_url)
 
 
+# Aufgabe 2
+# Search method
+def search_index(query, index_name):
+    reponse = requests.request('GET', url=ELASTICSEARCH_URL + index_name + '/_search', json=query)
+    print("Query reponse: ")
+    print(reponse.json())
+
+
+# Search queries for 2a
+query1 = {
+    "query": {
+        "match": {
+            "media-type": "blog"
+        }
+    }
+}
+
+query2 = {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "content": "internet"
+          }
+        },
+        {
+          "match": {
+            "media-type": "news"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# Boolean queries for 2b
+
+# "internet" AND "market" AND NOT source = "TradingCharts.com"
+query3 = {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "content": "internet"
+          }
+        },
+        {
+          "match": {
+            "content": "market"
+          }
+        }
+      ],
+      "must_not": {
+        "match": {
+          "source": "TradingCharts.com"
+        }
+      }
+    }
+  }
+}
+
+# ("Tesla" OR "Elon Musk") AND "electric vehicles"
+query4 = {
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "content": "telsa"
+          }
+        },
+        {
+          "match": {
+            "content": "elon musk"
+          }
+        }
+      ],
+      "must": {
+        "match": {
+          "content": "electric vehicles"
+        }
+      }
+    }
+  }
+}
+
+
 if __name__ == "__main__":
 
     # Aufgabe 1a+b: Index for the first 10_000 articles + Pre-processing step
-    # index_articles(10000)
+    index_articles(10000)
 
     # Aufgabe 1c: Repeat with num_docs = 100
     index_articles(100)
+
+    # Aufgabe 2: Search
+    # Search queries
+    search_index(query=query1, index_name='processed_100_data')
+    search_index(query=query2, index_name='processed_100_data')
+    # Boolean queries
+    search_index(query=query3, index_name='processed_100_data')
+    search_index(query=query4, index_name='processed_100_data')
+
+
