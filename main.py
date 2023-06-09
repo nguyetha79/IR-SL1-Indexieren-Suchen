@@ -1,6 +1,7 @@
 import requests
 import ast
 import re
+import json
 
 ELASTICSEARCH_URL = 'http://localhost:9200/'
 FILE_PATH = 'sample-1M.jsonl'
@@ -51,7 +52,7 @@ def index_docs(document_dicts, index_url):
 
 # Pre-process method
 def process(line):
-    # cleaned_line = re.sub("\\\\u[\\d\\w]{4}|\\\\\\w|(\\\\)(?=\\\\/)", '', line)
+    # cleaned_line = re.sub("\\\\u[\\d\\w]{4}|\\\\\\w|(\\\\\\\\)(?=\\\\/)", '', line)
     cleaned_line = re.sub("\\\\u[\\d\\w]{4}|\\\\\\w", '', line)
     cleaned_line = re.sub("\\s+", ' ', cleaned_line)
 
@@ -86,8 +87,10 @@ def index_articles(num_docs):
     articles_processed_url = f'processed_{num_docs}_data/_create/_'
     index_docs(cleaned_data, articles_processed_url)
 
+    with open(f'extracted_{num_docs}_data.json', 'w') as new_file:
+        json.dump(cleaned_data, new_file)
 
-# Aufgabe 2
+
 # Search method
 def search_index(query, index_name):
     reponse = requests.request('GET', url=ELASTICSEARCH_URL + index_name + '/_search', json=query)
@@ -124,7 +127,6 @@ query2 = {
 }
 
 # Boolean queries for 2b
-
 # "internet" AND "market" AND NOT source = "TradingCharts.com"
 query3 = {
   "query": {
@@ -179,7 +181,7 @@ query4 = {
 if __name__ == "__main__":
 
     # Aufgabe 1a+b: Index for the first 10_000 articles + Pre-processing step
-    index_articles(10000)
+    # index_articles(10000)
 
     # Aufgabe 1c: Repeat with num_docs = 100
     index_articles(100)
