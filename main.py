@@ -1,21 +1,9 @@
 import requests
 import ast
-import re
-import json
+from pprint import pprint
 
 ELASTICSEARCH_URL = 'http://localhost:9200/'
 FILE_PATH = 'sample-1M.jsonl'
-
-
-# Convert method: list of dicts into list of strings
-def convert(list_of_dicts):
-    list_of_strings = []
-
-    for dictionary in list_of_dicts:
-        string_representation = str(dictionary)
-        list_of_strings.append(string_representation)
-
-    return list_of_strings
 
 
 # Create index method
@@ -39,6 +27,61 @@ mappings = {
     }
 }
 
+process_mappings = {
+    "mappings": {
+        "properties": {
+            "id": {"type": "keyword"},
+            "content": {
+                "type": "text"
+            },
+            "title": {"type": "text"},
+            "media-type": {"type": "text"},
+            "source": {"type": "text"},
+            "published": {"type": "date"}
+        }
+    }
+}
+
+
+# Stackoverflow(2020)
+# Retrieved from https://stackoverflow.com/questions/62307234/
+#                 how-to-update-elasticsearch-search-analyzer-mapping-without-conflict-on-analyzer
+
+# Update mappings method
+def update_mappings(num_docs):
+    # Close index
+    requests.request(method='POST',
+                     url=ELASTICSEARCH_URL + f'processed_{num_docs}_data/_close')
+    # Update index
+    requests.request(method='POST',
+                     url=ELASTICSEARCH_URL + f'processed_{num_docs}_data/_settings',
+                     json=analyzer_settings)
+    # Open index
+    requests.request(method='POST',
+                     url=ELASTICSEARCH_URL + f'processed_{num_docs}_data/_open')
+
+
+analyzer_settings = {
+    "analysis": {
+        "analyzer": {
+            "custom_analyzer": {
+              "type": "custom",
+              "tokenizer": "standard",
+              "filter": [
+                "remove_newline_tab"
+              ]
+            }
+          },
+          "filter": {
+            "remove_newline_tab": {
+              "type": "pattern_replace",
+              "pattern": "[\\n\\t\\r]",
+              "replacement": "",
+            }
+          }
+        }
+}
+
 
 # Index method
 def index_docs(document_dicts, index_url):
@@ -48,15 +91,6 @@ def index_docs(document_dicts, index_url):
                          json=doc)
 
     print("Index done!")
-
-
-# Pre-process method
-def process(line):
-    # cleaned_line = re.sub("\\\\u[\\d\\w]{4}|\\\\\\w|(\\\\\\\\)(?=\\\\/)", '', line)
-    cleaned_line = re.sub("\\\\u[\\d\\w]{4}|\\\\\\w", '', line)
-    cleaned_line = re.sub("\\s+", ' ', cleaned_line)
-
-    return cleaned_line
 
 
 # Aufgabe 1
@@ -74,24 +108,29 @@ def index_articles(num_docs):
     index_docs(articles_data, articles_index_url)
 
     # Index with Pre-processing step
-    create_index(index_name=f'processed_{num_docs}_data', mappings=mappings)
+    create_index(index_name=f'processed_{num_docs}_data', mappings=process_mappings)
+    update_mappings(num_docs)
 
-    cleaned_data = []
-    articles_data = convert(articles_data)
-
-    for line in articles_data:
-        cleaned_line = process(line)
-        cleaned_data.append(cleaned_line)
-
-    cleaned_data = [ast.literal_eval(line) for line in cleaned_data]
     articles_processed_url = f'processed_{num_docs}_data/_create/_'
-    index_docs(cleaned_data, articles_processed_url)
-
-    with open(f'extracted_{num_docs}_data.json', 'w') as new_file:
-        json.dump(cleaned_data, new_file)
+    index_docs(articles_data, articles_processed_url)
 
 
-# Search method
+# Aufgabe 2
+# Search method 2a
+def search_optional_params(query, index_name, fields):
+    data = []
+
+    reponse = requests.request('GET', url=ELASTICSEARCH_URL + index_name + '/_search', json=query)
+    res = reponse.json()
+
+    for row in res["hits"]["hits"]:
+        data.append(row["_source"].items())
+
+    results = [pair for record in data for pair in record if pair[0] in fields]
+    print(results)
+
+
+# Search method 2b
 def search_index(query, index_name):
     reponse = requests.request('GET', url=ELASTICSEARCH_URL + index_name + '/_search', json=query)
     print("Query reponse: ")
@@ -178,6 +217,16 @@ query4 = {
 }
 
 
+# Aufgabe 3
+query3_1 = {
+    "query": {
+        "match": {
+            "content": "Is there water in mars?"
+        }
+    }
+}
+
+
 if __name__ == "__main__":
 
     # Aufgabe 1a+b: Index for the first 10_000 articles + Pre-processing step
@@ -187,11 +236,16 @@ if __name__ == "__main__":
     index_articles(100)
 
     # Aufgabe 2: Search
-    # Search queries
-    search_index(query=query1, index_name='processed_100_data')
-    search_index(query=query2, index_name='processed_100_data')
-    # Boolean queries
-    search_index(query=query3, index_name='processed_100_data')
-    search_index(query=query4, index_name='processed_100_data')
+    # 2a
+    fields = ['id', 'title']
+    # search_optional_params(query=query1, index_name='processed_100_data', fields=fields)
+    # search_optional_params(query=query2, index_name='processed_100_data', fields=fields)
+
+    # 2b
+    # search_index(query=query3, index_name='processed_100_data')
+    # search_index(query=query4, index_name='processed_100_data')
+
+    # Aufgabe 3
+    search_index(query=query3_1, index_name='processed_100_data')
 
 
