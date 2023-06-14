@@ -1,6 +1,5 @@
 import requests
 import ast
-from pprint import pprint
 
 ELASTICSEARCH_URL = 'http://localhost:9200/'
 FILE_PATH = 'sample-1M.jsonl'
@@ -32,7 +31,8 @@ process_mappings = {
         "properties": {
             "id": {"type": "keyword"},
             "content": {
-                "type": "text"
+                "type": "text",
+                "analyzer": "english"
             },
             "title": {"type": "text"},
             "media-type": {"type": "text"},
@@ -218,13 +218,6 @@ query4 = {
 
 
 # Aufgabe 3
-query3_1 = {
-    "query": {
-        "match": {
-            "content": "Is there water in mars?"
-        }
-    }
-}
 
 
 if __name__ == "__main__":
@@ -246,6 +239,6 @@ if __name__ == "__main__":
     # search_index(query=query4, index_name='processed_100_data')
 
     # Aufgabe 3
-    search_index(query=query3_1, index_name='processed_100_data')
+
 
 
