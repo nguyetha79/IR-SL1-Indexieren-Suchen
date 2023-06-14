@@ -177,6 +177,79 @@ query4 = {
 
 
 # Aufgabe 3
+query3_1 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+
+query3_2 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+query3_3 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+query3_4 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+query3_5 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+query3_6 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+query3_7 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+query3_8 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+query3_9 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+query3_10 = {
+    "query": {
+        "match": {
+            "content": " "
+        }
+    }
+}
+
+
 
 
 if __name__ == "__main__":
@@ -194,10 +267,19 @@ if __name__ == "__main__":
     # search_optional_params(query=query2, index_name='processed_100_data', fields=fields)
 
     # 2b
-    # search_index(query=query3, index_name='processed_100_data')
+    search_index(query=query3, index_name='processed_100_data')
     # search_index(query=query4, index_name='processed_100_data')
 
     # Aufgabe 3
-
+    # search_index(query=query3_1, index_name='processed_100_data')
+    # search_index(query=query3_2, index_name='processed_100_data')
+    # search_index(query=query3_3, index_name='processed_100_data')
+    # search_index(query=query3_4, index_name='processed_100_data')
+    # search_index(query=query3_5, index_name='processed_100_data')
+    # search_index(query=query3_6, index_name='processed_100_data')
+    # search_index(query=query3_7, index_name='processed_100_data')
+    # search_index(query=query3_8, index_name='processed_100_data')
+    # search_index(query=query3_9, index_name='processed_100_data')
+    # search_index(query=query3_10, index_name='processed_100_data')
 
 

@@ -59,7 +59,7 @@ analyzer_settings = {
           "filter": {
             "remove_newline_tab": {
               "type": "pattern_replace",
-              "pattern": "[\\n\\t\\r]",
+              "pattern": "[\\\\\\n\\\\\\t\\\\\\r]",
               "replacement": "",
             }
           }
