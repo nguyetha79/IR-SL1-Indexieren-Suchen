@@ -250,8 +250,6 @@ query3_10 = {
 }
 
 
-
-
 if __name__ == "__main__":
 
     # Aufgabe 1a+b: Index for the first 10_000 articles + Pre-processing step
