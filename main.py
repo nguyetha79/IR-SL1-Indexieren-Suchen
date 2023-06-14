@@ -26,76 +26,13 @@ mappings = {
     }
 }
 
-
-# Stackoverflow(2020)
-# Retrieved from https://stackoverflow.com/questions/62307234/
-#                 how-to-update-elasticsearch-search-analyzer-mapping-without-conflict-on-analyzer
-
-# Update mappings method
-def update_mappings(num_docs):
-    # Close index
-    requests.request(method='POST',
-                     url=ELASTICSEARCH_URL + f'articles_{num_docs}_data/_close')
-    # Update index
-    requests.request(method='POST',
-                     url=ELASTICSEARCH_URL + f'articles_{num_docs}_data/_settings',
-                     json=analyzer_settings)
-    # Open index
-    requests.request(method='POST',
-                     url=ELASTICSEARCH_URL + f'articles_{num_docs}_data/_open')
-
-
-analyzer_settings = {
-    "analysis": {
-        "analyzer": {
-            "custom_analyzer": {
-              "type": "custom",
-              "tokenizer": "standard",
-              "filter": [
-                "remove_newline_tab"
-              ]
-            }
-          },
-          "filter": {
-            "remove_newline_tab": {
-              "type": "pattern_replace",
-              "pattern": "[\\n\\t\\r]",
-              "replacement": "",
-            }
-          }
-        }
-}
-
-
-# Reindex method
-def reindex(num_docs):
-    # Update mappings
-    update_mappings(num_docs)
-
-    # Create new index with custom analyzer
-    create_index(index_name=f'processed_{num_docs}_data', mappings=process_mappings)
-
-    # Reindex
-    re_index = {
-        "source": {
-            "index": f"articles_{num_docs}_data"
-        }, "dest": {
-            "index": f"processed_{num_docs}_data"
-        }
-    }
-
-    requests.request(method='POST',
-                     url=ELASTICSEARCH_URL + '_reindex',
-                     json=re_index)
-
-
 process_mappings = {
     "mappings": {
         "properties": {
             "id": {"type": "keyword"},
             "content": {
                 "type": "text",
-                "analyzer": "custom_analyzer"
+                "analyzer": "english"
             },
             "title": {"type": "text"},
             "media-type": {"type": "text"},
@@ -131,7 +68,7 @@ def index_articles(num_docs):
     index_docs(articles_data, articles_index_url)
 
     # Index with Pre-processing step
-    reindex(num_docs)
+    create_index(index_name=f'processed_{num_docs}_data', mappings=mappings)
 
     articles_processed_url = f'processed_{num_docs}_data/_create/_'
     index_docs(articles_data, articles_processed_url)
