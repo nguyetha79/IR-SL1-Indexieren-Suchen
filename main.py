@@ -277,15 +277,15 @@ if __name__ == "__main__":
     # Aufgabe 2: Search
     # 2a
     fields = ['id', 'title']
-    # search_optional_params(query=query1, index_name='processed_100_data', fields=fields)
+    search_optional_params(query=query1, index_name='processed_100_data', fields=fields)
     # search_optional_params(query=query2, index_name='processed_100_data', fields=fields)
 
     # 2b
     search_index(query=query3, index_name='processed_100_data')
     # search_index(query=query4, index_name='processed_100_data')
 
-    # Aufgabe 3
-    # search_index(query=query3_1, index_name='processed_100_data')
+    # Aufgabe 3: Search queries
+    search_index(query=query3_1, index_name='processed_100_data')
     # search_index(query=query3_2, index_name='processed_100_data')
     # search_index(query=query3_3, index_name='processed_100_data')
     # search_index(query=query3_4, index_name='processed_100_data')
