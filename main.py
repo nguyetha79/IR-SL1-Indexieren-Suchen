@@ -26,6 +26,7 @@ mappings = {
     }
 }
 
+
 process_mappings = {
     "mappings": {
         "properties": {
@@ -53,6 +54,22 @@ def index_docs(document_dicts, index_url):
     print("Index done!")
 
 
+# Reindex method
+def reindex(num_docs):
+    re_index = {
+        "source": {
+            "index": f"articles_{num_docs}_data"
+        }, "dest": {
+            "index": f"processed_{num_docs}_data"
+        }
+    }
+
+    requests.request(method='POST',
+                     url=ELASTICSEARCH_URL + '_reindex',
+                     json=re_index)
+    print("Reindex done!")
+
+
 # Aufgabe 1
 def index_articles(num_docs):
     # Index
@@ -68,10 +85,9 @@ def index_articles(num_docs):
     index_docs(articles_data, articles_index_url)
 
     # Index with Pre-processing step
-    create_index(index_name=f'processed_{num_docs}_data', mappings=mappings)
+    create_index(index_name=f'processed_{num_docs}_data', mappings=process_mappings)
 
-    articles_processed_url = f'processed_{num_docs}_data/_create/_'
-    index_docs(articles_data, articles_processed_url)
+    reindex(num_docs)
 
 
 # Aufgabe 2
@@ -180,7 +196,7 @@ query4 = {
 query3_1 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "Who bought National Geographic magazine?"
         }
     }
 }
@@ -188,63 +204,63 @@ query3_1 = {
 query3_2 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "What are people fleeing from in Syria?"
         }
     }
 }
 query3_3 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "How much does the iPad Pro cost?"
         }
     }
 }
 query3_4 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "What was discovered on Mars?"
         }
     }
 }
 query3_5 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "How many people flee to Germany?"
         }
     }
 }
 query3_6 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "Which artists are the headliners at Apple Music Festival?"
         }
     }
 }
 query3_7 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "When did Edward Snowden write his first Twitter post?"
         }
     }
 }
 query3_8 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "Which country launched its first space observatory into space?"
         }
     }
 }
 query3_9 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "What is Chancellor Merkl asking of Facebook?"
         }
     }
 }
 query3_10 = {
     "query": {
         "match": {
-            "content": " "
+            "content": "Why went Facebook down?"
         }
     }
 }
