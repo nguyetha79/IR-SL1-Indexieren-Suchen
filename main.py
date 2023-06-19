@@ -92,6 +92,9 @@ def index_articles(num_docs):
 
 # Aufgabe 2
 # Search method 2a
+# Stack overflow. (2019).
+# Retrieved from https://stackoverflow.com/questions/55870944/
+#                extract-email-addresses-from-json-output-in-elasticsearch-with-regex
 def search_optional_params(query, index_name, fields):
     data = []
 
